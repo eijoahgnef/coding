@@ -42,7 +42,7 @@ Mircrotasks:
 JS stack: run script 
 Log: 1 7 6 8
 */
-// UI render
+
 // 第二轮
 /* 
 Tasks:   setTimeout setTimeout
@@ -50,7 +50,7 @@ Mircrotasks:
 JS stack: run setTimeout
 Log: 1 7 6 8 2 4 3 5
 */
-// UI render
+
 // 第三轮
 /* 
 Tasks: setTimeout
