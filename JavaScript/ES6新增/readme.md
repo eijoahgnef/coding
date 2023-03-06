@@ -90,11 +90,18 @@ ES6允许按照一定模式，从数组和对象中提取值，对变量进行�
     - Map.prototype.has(key)：返回一个布尔值，表示某个键是否在当前 Map 对象之中。
     - Map.prototype.delete(key)：删除某个键，返回true。如果删除失败，返回false。
     - Map.prototype.clear()：清除所有成员，没有返回值。
-- 遍历方法：
+- 遍历方法： 
     - Map.prototype.keys()：返回键名的遍历器。
     - Map.prototype.values()：返回键值的遍历器。
     - Map.prototype.entries()：返回所有成员的遍历器。
     - Map.prototype.forEach()：遍历 Map 的所有成员。
 - 相关使用
     - Map结构转为数组结构，比较快速的方法是使用扩展运算符。[...map]
-    - 
+    - 数组转为Map，直接将数值传入Map构造函数，就可以转为Map。new Map([array1, array2...]),这里注意，传入的数组只取前两个作为key和value，如果是空数组或者是长度为一的数组，缺少的值就用undefined填充。
+    - Map转为对象：如果所有的Map的键都是字符串，它可以无损地转为对象，如果有非字符串的键名，那么这个键名会被转换成字符串，再作为对象的键名。
+    - 对象转为Map：可以通过Object.entries()，也可以自己实现一个转换函数。
+- WeakMap: 与Map结构类似，也是用于生成键值对的集合。
+    - 与Map的区别：
+        - 首先WeakMap只接收对象作为键名，不接受其他键名作为键名，其次WeakMap的键名所指向的对象，不计入垃圾回收机制。
+        - 语法上，一是没有遍历操作（即没有keys()、values()、entries()），也没有size属性。二是无法清空，即不支持clear()方法。因此WeakMap只有四个方法可用：get()、set()、has()、delete()
+    - WeakMap 解决了内存泄漏的问题，它的键名所引用的对象都是弱引用，即垃圾回收机制不将该引用考虑在内。因此，只要所引用的对象的其他引用都被清除，垃圾回收机制就会释放该对象所占用的内存。也就是说，一旦不再需要，WeakMap 里面的键名对象和所对应的键值对会自动消失，不用手动删除引用。
