@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>JSONP 实例</title>
+</head>
+<body>
+<script>
+  function callbackFunction(data){
+    console.log("i got it")
+    console.log(data);
+  }
+</script>
+<script>
+  window.onload=function(){
+    var script=document.createElement("script");
+    script.src="https://www.runoob.com/try/ajax/jsonp.php?jsoncallback=callbackFunction";
+    document.head.append(script)
+  }
+</script>
+</body>
+</html>
