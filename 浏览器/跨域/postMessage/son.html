@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>HTML5学堂 - postMessage - iframe子页面</title>
+</head>
+<body>
+    <span>子域</span>
+    <!-- B域 -->
+    <script type="text/javascript">
+        window.addEventListener('message', function(e){
+            console.log(e.data); //  'fhj'
+            if(e.source != window.parent) {
+                return;
+            }
+            var childData = 'iframe中的内容';
+            window.parent.postMessage(childData, '*');
+        }, false);
+    </script>
+</body>
+</html>

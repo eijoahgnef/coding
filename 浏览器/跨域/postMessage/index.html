@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>HTML5学堂 - postMessage - 静态iframe实例 - 父级页面</title>
+</head>
+<body>
+    <div id="h5course">A域 - HTML5学堂</div>
+    <div>
+        <iframe id="child" src="http://127.0.0.1:5500/%E6%B5%8F%E8%A7%88%E5%99%A8/%E8%B7%A8%E5%9F%9F/postMessage/son.html"></iframe>
+    </div>
+
+
+    <style>
+        #child {
+            width: 700px;
+            height: 500px;
+        }
+    </style>
+    <script type="text/javascript">
+        var h5course = document.getElementById('h5course');
+
+
+        window.onload=function(){
+            window.frames[0].postMessage('fhj','http://127.0.0.1:5500/%E6%B5%8F%E8%A7%88%E5%99%A8/%E8%B7%A8%E5%9F%9F/postMessage/son.html');
+        }
+
+
+        window.addEventListener('message', function(e){
+            console.log(e);
+            var message = e.data;
+            h5course.innerHTML = message + '呆呆鹅';
+        }, false);
+    </script>
+</body>
+</html>
