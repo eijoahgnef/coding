@@ -6,6 +6,18 @@
  */
 // 用一个全局变量存储被注册的副作用函数
 let activeEffect
+// cleanup 函数将副作用函数从依赖集合中移除
+function cleanup(effectFn) {
+    // 遍历 effectFn.deps 数组
+    for (let i = 0; i < effectFn.deps.length; i++) {
+        // deps 是依赖集合
+        const deps = effectFn.deps[i]
+        // 将 effectFn 从依赖集合中移除
+        deps.delete(effectFn)
+    }
+    // 最后需要重置 effectFn.deps 数组
+    effectFn.deps.length = 0
+}
 // effect 栈
 const effectStack = []
 function effect(fn, options= {}) {
@@ -28,24 +40,7 @@ function effect(fn, options= {}) {
     // 执行副作用函数
     effectFn()
 }
-// effect(
-//     // 一个匿名的副作用函数
-//     () => {
-//         document.body.innerText = obj.text
-//     }
-// )
-// cleanup 函数将副作用函数从依赖集合中移除
-function cleanup(effectFn) {
-    // 遍历 effectFn.deps 数组
-    for (let i = 0; i < effectFn.deps.length; i++) {
-        // deps 是依赖集合
-        const deps = effectFn.deps[i]
-        // 将 effectFn 从依赖集合中移除
-        deps.delete(effectFn)
-    }
-    // 最后需要重置 effectFn.deps 数组
-    effectFn.deps.length = 0
-}
+
 // 储存副作用函数的桶
 const bucket = new WeakMap()
 
