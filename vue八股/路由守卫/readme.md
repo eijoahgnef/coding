@@ -5,6 +5,10 @@
 - to：即将要进入的目标
 - from：当前导航正要离开的路由
 - next：（可选参数）你可以向任何导航守卫传递第三个参数，但是只能在所有的逻辑路径不重叠的情况下，否则钩子永远都不会被解析或报错。
+  - next() 直接进 to 所指路由
+  - next(false) 中断路由
+  - next('route') 跳转指定路由 // next('/home)
+  - next('error') 跳转错误路由
 ```
 // 用户未能验证身份时重定向到 /login 
 router.beforeEach((to, from, next) => {
@@ -71,3 +75,23 @@ const UserDetails = {
   },
 }
 ```
+## 完整的导航解析流程
+导航被触发 ——> 在失活的组件里调用离开守卫 `beforeRouteLeave` ——> 调用全局的 `beforeEach` 守卫 ——> 
+在 `重用的组件` 里调用 `beforeRouteUpdate` 守卫 ——> 在路由配置里调用 `beforeEnter` ——> 
+解析异步路由组件 ——> 在被激活的组件里面调用 `beforeRouteEnter` ——> 调用全局的 `beforeResolve` 守卫 ——>
+导航被确认 ——> 调用全局的 `afterEach` 钩子 ——> 触发 DOM 更新 ——> 用创建好的实例调用 `beforeRouteEnter` 守卫中传给 next 的回调函数
+
+## 导航守卫的开发场景
+全局守卫：
+- beforeEach：登录验证（鉴权）
+组件内的守卫：
+- beforeRouteLeave：可以访问组件实例this
+①在路由切换的时候，对定时器进行清除，以免占用内存 ② 当页面中有未关闭的窗口，或未保存的内容是，阻止页面跳转
+```
+beforeRouteLeave (to, from, next) {
+  window.clearInterval(this.timer) //清楚定时器
+  next()
+}
+```
+- beforeRouteUpdate：可通过this访问实例。当前路由query变更时，该守卫会被调用
+- beforeRouteEnter：全局beforeResolve和全局afterEach之前调用
