@@ -33,3 +33,11 @@ setup() {
 
 # 实现原理
 将传入的回调函数包装成异步任务，异步任务又分微任务和宏任务，为了尽快执行所以优先选择微任务； nextTick 提供了四种异步方法 Promise.then、MutationObserver、setImmediate、setTimeOut(fn,0)
+优先级：promise ——> MutationObserver ——> setImmediate ——> setTimeout
+
+```
+Vue.prototype.$nextTick = function (fn) {
+    return nextTick(fn, this)
+};
+```
+其内部调用的也是`nextTick`函数。 （index.ts）
