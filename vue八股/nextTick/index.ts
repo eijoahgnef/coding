@@ -29,13 +29,13 @@ export function nextTick(cb?: Function, ctx?: Object) {
             _resolve(ctx)
         }
     })
-    
+
     // 如果当前没有在 pending 的回调，就执行 timeFunc 函数选择当前环境优先支持的异步方法
     if (!pending) {
         pending = true
         timerFunc()
     }
-    
+
     // 如果没有传入回调，并且当前环境支持 promise，就返回一个 promise
     if (!cb && typeof Promise !== 'undefined') {
         return new Promise(resolve => {
@@ -51,19 +51,19 @@ export function nextTick(cb?: Function, ctx?: Object) {
 
 // 多次调用 nextTick 时 ,timerFunc 只会执行一次
 
-let timerFunc   
+let timerFunc
 // 判断当前环境是否支持 promise
 if (typeof Promise !== 'undefined' && isNative(Promise)) {  // 支持 promise
     const p = Promise.resolve()
     timerFunc = () => {
-    // 用 promise.then 把 flushCallbacks 函数包裹成一个异步微任务
+        // 用 promise.then 把 flushCallbacks 函数包裹成一个异步微任务
         p.then(flushCallbacks)
         if (isIOS) setTimeout(noop)
     }
     // 标记当前 nextTick 使用的微任务
     isUsingMicroTask = true
-    
-    
+
+
     // 如果不支持 promise，就判断是否支持 MutationObserver
     // 不是IE环境，并且原生支持 MutationObserver，那也是一个微任务
 } else if (!isIE && typeof MutationObserver !== 'undefined' && (
@@ -72,9 +72,9 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {  // 支持 promise
 )) {
     let counter = 1
     // new 一个 MutationObserver 类
-    const observer = new MutationObserver(flushCallbacks) 
+    const observer = new MutationObserver(flushCallbacks)
     // 创建一个文本节点
-    const textNode = document.createTextNode(String(counter))   
+    const textNode = document.createTextNode(String(counter))
     // 监听这个文本节点，当数据发生变化就执行 flushCallbacks 
     observer.observe(textNode, { characterData: true })
     timerFunc = () => {
@@ -82,13 +82,36 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {  // 支持 promise
         textNode.data = String(counter)  // 数据更新
     }
     isUsingMicroTask = true    // 标记当前 nextTick 使用的微任务
-    
-    
+
+
     // 判断当前环境是否原生支持 setImmediate
 } else if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
-    timerFunc = () => { setImmediate(flushCallbacks)  }
+    timerFunc = () => { setImmediate(flushCallbacks) }
 } else {
 
     // 以上三种都不支持就选择 setTimeout
     timerFunc = () => { setTimeout(flushCallbacks, 0) }
 }
+//  isNative 函数
+function isNative(Ctor) {
+    return typeof Ctor === 'function' && /native code/.test(Ctor.toString())
+}
+
+// 如果多次调用 nextTick，会依次执行上面的方法，将 nextTick 的回调放在 callbacks 数组中
+// 最后通过 flushCallbacks 函数遍历 callbacks 数组的拷贝并执行其中的回调
+function flushCallbacks() {
+    pending = false
+    const copies = callbacks.slice(0)    // 拷贝一份
+    callbacks.length = 0    // 清空 callbacks
+    for (let i = 0; i < copies.length; i++) {    // 遍历执行传入的回调
+        copies[i]()
+    }
+}
+
+// 为什么要拷贝一份 callbacks
+
+// callbacks.slice(0) 将 callbacks 拷贝出来一份，
+// 是因为考虑到 nextTick 回调中可能还会调用 nextTick 的情况,
+// 如果 nextTick 回调中又调用了一次 nextTick，则又会向 callbacks 中添加回调，
+// nextTick 回调中的 nextTick 应该放在下一轮执行，
+// 如果不将 callbacks 复制一份就可能一直循环

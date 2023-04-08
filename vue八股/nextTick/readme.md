@@ -41,3 +41,15 @@ Vue.prototype.$nextTick = function (fn) {
 };
 ```
 其内部调用的也是`nextTick`函数。 （index.ts）
+
+nextTick执行过程：
+- 将回调函数包装后放入到callbacks等待执行
+- 将执行函数放到微任务或者宏任务中
+- 事件循环到了微任务或者宏任务，执行函数会依次执行callbacks中的回调
+
+
+解释：将nextTick里的回调函数放入到callbacks数组中，这些回调函数会在flushCallbacks这个执行函数中执行，而后会将这个执行函数放入到微任务或者宏任务中去等待执行，放入到哪个异步任务中呢？这个根据当前环境来的，判断的优先级为，promise（then中）、MutationObserver、setImmediate、setTimeout，当事件循环到这个异步函数时，就会调用执行函数，执行函数就会依次执行callbacks中的回调函数。
+扩展：只有执行完callbacks里的函数才会去执行下一个nextTick（也就是flushCallbacks执行完），这里利用的是pending去控制是否执行异步任务，然后在flushCallbacks中会改变pending的值，使得下一次的nextTIck能正常执行。
+
+对于执行函数放入到异步任务的优先级中，为什么优先使用微任务？
+因为在执行下一次宏任务之前会执行一次UI渲染，等待的时长要比微任务长，所以能使用微任务的时候优先使用微任务。
