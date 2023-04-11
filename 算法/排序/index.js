@@ -70,5 +70,8 @@ function merge(left, right) {
 	while (right.length) result.push(right.shift());
 	return result;
 };
+
+// 堆排序，
 const arr = [2,35,15,123,51,123,32,32,12,124]
-console.log(mergeSort(arr));
+// console.log(mergeSort(arr));
+
