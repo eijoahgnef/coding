@@ -71,7 +71,22 @@ function merge(left, right) {
 	return result;
 };
 
-// 堆排序，
+// 插入排序
+function insertSort(arr) {
+    let len = arr.length
+    let preIndex, current
+    for (let i = 1; i < len; i++) {
+        preIndex = i - 1
+        current = arr[i]
+        while (preIndex >= 0 && arr[preIndex] > current) {
+            arr[preIndex + 1] = arr[preIndex]
+            preIndex--
+        }
+        arr[preIndex + 1] = current
+    }
+    return arr
+}
+
 const arr = [2,35,15,123,51,123,32,32,12,124]
-// console.log(mergeSort(arr));
+console.log(insertSort(arr));
 
